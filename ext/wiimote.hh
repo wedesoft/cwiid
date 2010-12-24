@@ -37,6 +37,10 @@ public:
   bool getRumble(void);
   void setRumble( bool state ) throw(Error);
   unsigned short int getButtons(void);
+  unsigned char getAcc( int id );
+  bool irValid( int i );
+  unsigned short int getIRX( int i );
+  unsigned short int getIRY( int i );
   void err( const char *s, va_list ap );
   static VALUE cRubyClass;
   static VALUE registerRubyClass(void);
@@ -53,6 +57,8 @@ public:
   static VALUE wrapGetRumble( VALUE rbSelf );
   static VALUE wrapSetRumble( VALUE rbSelf, VALUE rbState );
   static VALUE wrapGetButtons( VALUE rbSelf );
+  static VALUE wrapGetAcc( VALUE rbSelf );
+  static VALUE wrapGetIR( VALUE rbSelf );
   static WiiMote *current;
 protected:
   cwiid_wiimote_t *m_wiimote;

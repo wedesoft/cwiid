@@ -116,6 +116,26 @@ unsigned short int WiiMote::getButtons(void)
   return m_state.buttons;
 }
 
+unsigned char WiiMote::getAcc( int id )
+{
+  return m_state.acc[ id ];
+}
+
+bool WiiMote::irValid( int i )
+{
+  return m_state.ir_src[ i ].valid != 0;
+}
+
+unsigned short int WiiMote::getIRX( int i )
+{
+  return m_state.ir_src[ i ].pos[ CWIID_X ];
+}
+
+unsigned short int WiiMote::getIRY( int i )
+{
+  return m_state.ir_src[ i ].pos[ CWIID_Y ];
+}
+
 void WiiMote::err( const char *s, va_list ap )
 {
   char buffer[4096];
@@ -175,6 +195,10 @@ VALUE WiiMote::registerRubyClass(void)
                     RUBY_METHOD_FUNC( wrapSetRumble ), 1 );
   rb_define_method( cRubyClass, "buttons",
                     RUBY_METHOD_FUNC( wrapGetButtons ), 0 );
+  rb_define_method( cRubyClass, "acc",
+                    RUBY_METHOD_FUNC( wrapGetAcc ), 0 );
+  rb_define_method( cRubyClass, "ir",
+                    RUBY_METHOD_FUNC( wrapGetIR ), 0 );
   return cRubyClass;
 }
 
@@ -280,4 +304,23 @@ VALUE WiiMote::wrapGetButtons( VALUE rbSelf )
   WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
   return INT2NUM( (*self)->getButtons() );
 }  
+
+VALUE WiiMote::wrapGetAcc( VALUE rbSelf )
+{
+  WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+  return rb_ary_new3( 3, INT2NUM( (*self)->getAcc( 0 ) ),
+                         INT2NUM( (*self)->getAcc( 1 ) ),
+                         INT2NUM( (*self)->getAcc( 2 ) ) );
+}  
+
+VALUE WiiMote::wrapGetIR( VALUE rbSelf )
+{
+  VALUE rbRetVal = rb_ary_new();
+  WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+  for ( int i=0; i<CWIID_IR_SRC_COUNT; i++ )
+    if ( (*self)->irValid( i ) )
+      rb_ary_push( rbRetVal, rb_ary_new3( 2, INT2NUM( (*self)->getIRX( i ) ),
+                                          INT2NUM( (*self)->getIRY( i ) ) ) );
+  return rbRetVal;
+}
 
