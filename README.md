@@ -1,5 +1,5 @@
-ruby-cwiid
-==========
+cwiid
+=====
 
 **Author**:       Jan Wedekind
 **Copyright**:    2010
@@ -8,14 +8,14 @@ ruby-cwiid
 Synopsis
 --------
 
-This Ruby extension provides access to a Wii Remote.
+This Ruby extension provides access to a Wii Remote via L. Donnie Smith's libcwiid.
 
 Installation
 ------------
 
 To install this Ruby extension, use the following command:
 
-    $ sudo gem install ruby-cwiid
+    $ sudo gem install cwiid
 
 Alternatively you can build and install the Ruby extension from source as follows:
 
@@ -32,6 +32,6 @@ Simply run Interactive Ruby:
 You can load the Ruby extension like this:
 
     require 'rubygems'
-    require 'ruby-cwiid'
+    require 'cwiid'
 
 
