@@ -47,6 +47,8 @@ void WiiMote::close(void)
   if ( m_wiimote != NULL ) {
     cwiid_close( m_wiimote );
     m_wiimote = NULL;
+    current = NULL;
+    cwiid_set_err( cwiid_err_default );
   };
 }
 
