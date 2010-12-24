@@ -19,8 +19,23 @@ using namespace std;
 
 VALUE WiiMote::cRubyClass = Qnil;
 
-WiiMote::WiiMote(void) throw (Error)
+WiiMote::WiiMote(void) throw (Error):
+  m_wiimote(NULL)
 {
+  m_wiimote = cwiid_open( NULL, 0 );
+}
+
+WiiMote::~WiiMote(void)
+{
+  close();
+}
+
+void WiiMote::close(void)
+{
+  if ( m_wiimote != NULL ) {
+    cwiid_close( m_wiimote );
+    m_wiimote = NULL;
+  };
 }
 
 VALUE WiiMote::registerRubyClass(void)
@@ -28,6 +43,7 @@ VALUE WiiMote::registerRubyClass(void)
   cRubyClass = rb_define_class( "WiiMote", rb_cObject );
   rb_define_singleton_method( cRubyClass, "new",
                               RUBY_METHOD_FUNC( wrapNew ), 0 );
+  rb_define_method( cRubyClass, "close", RUBY_METHOD_FUNC( wrapClose ), 0 );
   return cRubyClass;
 }
 
@@ -47,5 +63,12 @@ VALUE WiiMote::wrapNew( VALUE rbClass )
     rb_raise( rb_eRuntimeError, "%s", e.what() );
   };
   return retVal;
+}
+
+VALUE WiiMote::wrapClose( VALUE rbSelf )
+{
+  WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+  (*self)->close();
+  return rbSelf;
 }
  
