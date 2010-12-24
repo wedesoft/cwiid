@@ -67,6 +67,24 @@ void WiiMote::getState(void) throw (Error)
   ERRORMACRO( !m_error, Error, , "Error getting state: " << m_errorMsg );
 }
 
+unsigned char WiiMote::getRptMode(void)
+{
+  return m_state.rpt_mode;
+}
+
+void WiiMote::setRptMode( unsigned char mode ) throw (Error)
+{
+  m_error = false;
+  cwiid_set_rpt_mode( m_wiimote, mode );
+  ERRORMACRO( !m_error, Error, , "Error setting RPT mode: " << m_errorMsg );
+  m_state.rpt_mode = mode;
+}
+
+unsigned char WiiMote::getBattery(void)
+{
+  return m_state.battery;
+}
+
 unsigned char WiiMote::getLED(void)
 {
   return m_state.led;
@@ -93,6 +111,11 @@ void WiiMote::setRumble( bool state ) throw( Error )
   m_state.rumble = state ? 1 : 0;
 }
 
+unsigned short int WiiMote::getButtons(void)
+{
+  return m_state.buttons;
+}
+
 void WiiMote::err( const char *s, va_list ap )
 {
   char buffer[4096];
@@ -104,10 +127,30 @@ void WiiMote::err( const char *s, va_list ap )
 VALUE WiiMote::registerRubyClass(void)
 {
   cRubyClass = rb_define_class( "WiiMote", rb_cObject );
+  rb_define_const( cRubyClass, "RPT_STATUS", INT2NUM( CWIID_RPT_STATUS ) );
+  rb_define_const( cRubyClass, "RPT_BTN", INT2NUM( CWIID_RPT_BTN ) );
+  rb_define_const( cRubyClass, "RPT_ACC", INT2NUM( CWIID_RPT_ACC ) );
+  rb_define_const( cRubyClass, "RPT_IR", INT2NUM( CWIID_RPT_IR ) );
+  rb_define_const( cRubyClass, "RPT_NUNCHUK", INT2NUM( CWIID_RPT_NUNCHUK ) );
+  rb_define_const( cRubyClass, "RPT_CLASSIC", INT2NUM( CWIID_RPT_CLASSIC ) );
+  rb_define_const( cRubyClass, "RPT_BALANCE", INT2NUM( CWIID_RPT_BALANCE ) );
+  rb_define_const( cRubyClass, "RPT_MOTIONPLUS", INT2NUM( CWIID_RPT_MOTIONPLUS ) );
+  rb_define_const( cRubyClass, "BTN_2", INT2NUM( CWIID_BTN_2 ) );
+  rb_define_const( cRubyClass, "BTN_1", INT2NUM( CWIID_BTN_1 ) );
+  rb_define_const( cRubyClass, "BTN_B", INT2NUM( CWIID_BTN_B ) );
+  rb_define_const( cRubyClass, "BTN_A", INT2NUM( CWIID_BTN_A ) );
+  rb_define_const( cRubyClass, "BTN_MINUS", INT2NUM( CWIID_BTN_MINUS ) );
+  rb_define_const( cRubyClass, "BTN_HOME", INT2NUM( CWIID_BTN_HOME ) );
+  rb_define_const( cRubyClass, "BTN_LEFT", INT2NUM( CWIID_BTN_LEFT ) );
+  rb_define_const( cRubyClass, "BTN_RIGHT", INT2NUM( CWIID_BTN_RIGHT ) );
+  rb_define_const( cRubyClass, "BTN_DOWN", INT2NUM( CWIID_BTN_DOWN ) );
+  rb_define_const( cRubyClass, "BTN_UP", INT2NUM( CWIID_BTN_UP ) );
+  rb_define_const( cRubyClass, "BTN_PLUS", INT2NUM( CWIID_BTN_PLUS ) );
   rb_define_const( cRubyClass, "LED1_ON", INT2NUM( CWIID_LED1_ON ) );
   rb_define_const( cRubyClass, "LED2_ON", INT2NUM( CWIID_LED2_ON ) );
   rb_define_const( cRubyClass, "LED3_ON", INT2NUM( CWIID_LED3_ON ) );
   rb_define_const( cRubyClass, "LED4_ON", INT2NUM( CWIID_LED4_ON ) );
+  rb_define_const( cRubyClass, "BATTERY_MAX", INT2NUM( CWIID_BATTERY_MAX ) );
   rb_define_singleton_method( cRubyClass, "new",
                               RUBY_METHOD_FUNC( wrapNew ), 0 );
   rb_define_method( cRubyClass, "close",
@@ -116,6 +159,12 @@ VALUE WiiMote::registerRubyClass(void)
                     RUBY_METHOD_FUNC( wrapRequestStatus ), 0 );
   rb_define_method( cRubyClass, "get_state",
                     RUBY_METHOD_FUNC( wrapGetState ), 0 );
+  rb_define_method( cRubyClass, "rpt_mode",
+                    RUBY_METHOD_FUNC( wrapGetRptMode ), 0 );
+  rb_define_method( cRubyClass, "rpt_mode=",
+                    RUBY_METHOD_FUNC( wrapSetRptMode ), 1 );
+  rb_define_method( cRubyClass, "battery",
+                    RUBY_METHOD_FUNC( wrapGetBattery ), 0 );
   rb_define_method( cRubyClass, "led",
                     RUBY_METHOD_FUNC( wrapGetLED ), 0 );
   rb_define_method( cRubyClass, "led=",
@@ -124,6 +173,8 @@ VALUE WiiMote::registerRubyClass(void)
                     RUBY_METHOD_FUNC( wrapGetRumble ), 0 );
   rb_define_method( cRubyClass, "rumble=",
                     RUBY_METHOD_FUNC( wrapSetRumble ), 1 );
+  rb_define_method( cRubyClass, "buttons",
+                    RUBY_METHOD_FUNC( wrapGetButtons ), 0 );
   return cRubyClass;
 }
 
@@ -166,10 +217,28 @@ VALUE WiiMote::wrapGetState( VALUE rbSelf )
   return rbSelf;
 }
 
-VALUE WiiMote::wrapGetRumble( VALUE rbSelf )
+VALUE WiiMote::wrapGetRptMode( VALUE rbSelf )
 {
   WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
-  return (*self)->getRumble() ? Qtrue : Qfalse;
+  (*self)->getRptMode();
+  return rbSelf;
+}
+
+VALUE WiiMote::wrapSetRptMode( VALUE rbSelf, VALUE rbMode )
+{
+  try {
+    WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+    (*self)->setRptMode( NUM2INT( rbMode ) );
+  } catch ( exception &e ) {
+    rb_raise( rb_eRuntimeError, "%s", e.what() );
+  };
+  return rbMode;
+}  
+
+VALUE WiiMote::wrapGetBattery( VALUE rbSelf )
+{
+  WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+  return INT2NUM( (*self)->getBattery() );
 }  
 
 VALUE WiiMote::wrapGetLED( VALUE rbSelf )
@@ -189,6 +258,12 @@ VALUE WiiMote::wrapSetLED( VALUE rbSelf, VALUE rbState )
   return rbState;
 }  
 
+VALUE WiiMote::wrapGetRumble( VALUE rbSelf )
+{
+  WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+  return (*self)->getRumble() ? Qtrue : Qfalse;
+}  
+
 VALUE WiiMote::wrapSetRumble( VALUE rbSelf, VALUE rbState )
 {
   try {
@@ -200,4 +275,9 @@ VALUE WiiMote::wrapSetRumble( VALUE rbSelf, VALUE rbState )
   return rbState;
 }  
 
+VALUE WiiMote::wrapGetButtons( VALUE rbSelf )
+{
+  WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+  return INT2NUM( (*self)->getButtons() );
+}  
 

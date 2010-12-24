@@ -15,5 +15,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 class WiiMote
 
+  class << self
+
+    alias_method :orig_new, :new
+
+    def new
+      retval = orig_new
+      retval.rpt_mode = RPT_STATUS | RPT_BTN
+      retval
+    end
+
+  end
+
+  alias_method :orig_battery, :battery
+
+  def battery
+    orig_battery.to_f / BATTERY_MAX
+  end
+
 end
 

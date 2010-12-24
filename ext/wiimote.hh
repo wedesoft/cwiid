@@ -29,10 +29,14 @@ public:
   void close(void);
   void requestStatus(void) throw (Error);
   void getState(void) throw (Error);
+  unsigned char getRptMode(void);
+  void setRptMode( unsigned char mode ) throw (Error);
+  unsigned char getBattery(void);
   unsigned char getLED(void);
   void setLED( unsigned char state ) throw (Error);
   bool getRumble(void);
   void setRumble( bool state ) throw(Error);
+  unsigned short int getButtons(void);
   void err( const char *s, va_list ap );
   static VALUE cRubyClass;
   static VALUE registerRubyClass(void);
@@ -41,10 +45,14 @@ public:
   static VALUE wrapClose( VALUE rbSelf );
   static VALUE wrapRequestStatus( VALUE rbSelf );
   static VALUE wrapGetState( VALUE rbSelf );
+  static VALUE wrapGetRptMode( VALUE rbSelf );
+  static VALUE wrapSetRptMode( VALUE rbSelf, VALUE rbMode );
+  static VALUE wrapGetBattery( VALUE rbSelf );
   static VALUE wrapGetLED( VALUE rbSelf );
   static VALUE wrapSetLED( VALUE rbSelf, VALUE rbState );
   static VALUE wrapGetRumble( VALUE rbSelf );
   static VALUE wrapSetRumble( VALUE rbSelf, VALUE rbState );
+  static VALUE wrapGetButtons( VALUE rbSelf );
   static WiiMote *current;
 protected:
   cwiid_wiimote_t *m_wiimote;
