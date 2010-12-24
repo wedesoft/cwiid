@@ -27,7 +27,8 @@ public:
   WiiMote(void) throw (Error);
   virtual ~WiiMote(void);
   void close(void);
-  void setLED( int state ) throw (Error);
+  void setLED( unsigned char state ) throw (Error);
+  void setRumble( bool state ) throw( Error );
   void err( const char *s, va_list ap );
   static VALUE cRubyClass;
   static VALUE registerRubyClass(void);
@@ -35,6 +36,7 @@ public:
   static VALUE wrapNew( VALUE rbClass );
   static VALUE wrapClose( VALUE rbSelf );
   static VALUE wrapSetLED( VALUE rbSelf, VALUE rbState );
+  static VALUE wrapSetRumble( VALUE rbSelf, VALUE rbState );
   static WiiMote *current;
 protected:
   cwiid_wiimote_t *m_wiimote;

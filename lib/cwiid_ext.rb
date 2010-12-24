@@ -23,6 +23,7 @@ class WiiMote
       retval = orig_new
       retval.instance_eval do
         @led = 0
+        @rumble = false
       end
       retval
     end
@@ -30,12 +31,20 @@ class WiiMote
   end
 
   attr_reader :led
+  attr_reader :rumble
 
   alias_method :orig_set_led, :led=
 
   def led=( state )
     @led = state
     orig_set_led state
+  end
+
+  alias_method :orig_set_rumble, :rumble=
+
+  def rumble=( state )
+    @rumble = state
+    orig_set_rumble state
   end
 
 end

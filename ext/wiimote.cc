@@ -52,11 +52,18 @@ void WiiMote::close(void)
   };
 }
 
-void WiiMote::setLED( int state ) throw (Error)
+void WiiMote::setLED( unsigned char state ) throw (Error)
 {
   m_error = false;
   cwiid_set_led( m_wiimote, state );
   ERRORMACRO( !m_error, Error, , "Error setting LED state: " << m_errorMsg );
+}
+
+void WiiMote::setRumble( bool state ) throw( Error )
+{
+  m_error = false;
+  cwiid_set_rumble( m_wiimote, state ? 1 : 0 );
+  ERRORMACRO( !m_error, Error, , "Error setting rumble state: " << m_errorMsg );
 }
 
 void WiiMote::err( const char *s, va_list ap )
@@ -78,6 +85,7 @@ VALUE WiiMote::registerRubyClass(void)
                               RUBY_METHOD_FUNC( wrapNew ), 0 );
   rb_define_method( cRubyClass, "close", RUBY_METHOD_FUNC( wrapClose ), 0 );
   rb_define_method( cRubyClass, "led=", RUBY_METHOD_FUNC( wrapSetLED ), 1 );
+  rb_define_method( cRubyClass, "rumble=", RUBY_METHOD_FUNC( wrapSetRumble ), 1 );
   return cRubyClass;
 }
 
@@ -104,6 +112,17 @@ VALUE WiiMote::wrapSetLED( VALUE rbSelf, VALUE rbState )
   try {
     WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
     (*self)->setLED( NUM2INT( rbState ) );
+  } catch ( exception &e ) {
+    rb_raise( rb_eRuntimeError, "%s", e.what() );
+  };
+  return rbState;
+}  
+
+VALUE WiiMote::wrapSetRumble( VALUE rbSelf, VALUE rbState )
+{
+  try {
+    WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+    (*self)->setRumble( rbState == Qtrue );
   } catch ( exception &e ) {
     rb_raise( rb_eRuntimeError, "%s", e.what() );
   };
