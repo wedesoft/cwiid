@@ -19,23 +19,22 @@ using namespace std;
 
 VALUE WiiMote::cRubyClass = Qnil;
 
-void err( cwiid_wiimote_t *wiimote, const char *s, va_list ap )
+WiiMote *WiiMote::current = NULL;
+
+static void staticErr( cwiid_wiimote_t *wiimote, const char *s, va_list ap )
 {
-  if ( wiimote )
-    printf( "%d: ", cwiid_get_id( wiimote ) );
-  else
-    printf( "-1: " );
-  vprintf( s, ap );
-  printf( "\n" );
+  WiiMote::current->err( s, ap );
 }
 
 WiiMote::WiiMote(void) throw (Error):
-  m_wiimote(NULL)
+  m_wiimote(NULL), m_error(false)
 {
   bdaddr_t bdaddrAny = { { 0, 0, 0, 0, 0, 0 } };
-  cwiid_set_err( err );
+  current = this;
+  cwiid_set_err( staticErr );
   m_wiimote = cwiid_open( &bdaddrAny, 0 );
-  ERRORMACRO( m_wiimote != NULL, Error, , "Failed to connect to Wii Remote" );
+  ERRORMACRO( !m_error, Error, , "Failed to connect to Wii Remote: "
+              << m_errorMsg );
 }
 
 WiiMote::~WiiMote(void)
@@ -49,6 +48,14 @@ void WiiMote::close(void)
     cwiid_close( m_wiimote );
     m_wiimote = NULL;
   };
+}
+
+void WiiMote::err( const char *s, va_list ap )
+{
+  char buffer[4096];
+  vsnprintf( &buffer[0], sizeof(buffer), s, ap );
+  m_errorMsg = buffer;
+  m_error = true;
 }
 
 VALUE WiiMote::registerRubyClass(void)

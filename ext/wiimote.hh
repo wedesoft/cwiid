@@ -17,6 +17,7 @@
 #define WIIMOTE_HH
 #include <boost/shared_ptr.hpp>
 #include <cwiid.h>
+#include <map>
 #include "rubyinc.hh"
 #include "error.hh"
 
@@ -26,13 +27,17 @@ public:
   WiiMote(void) throw (Error);
   virtual ~WiiMote(void);
   void close(void);
+  void err( const char *s, va_list ap );
   static VALUE cRubyClass;
   static VALUE registerRubyClass(void);
   static void deleteRubyObject( void *ptr );
   static VALUE wrapNew( VALUE rbClass );
   static VALUE wrapClose( VALUE rbSelf );
+  static WiiMote *current;
 protected:
   cwiid_wiimote_t *m_wiimote;
+  bool m_error;
+  std::string m_errorMsg;
 };
 
 typedef boost::shared_ptr< WiiMote > WiiMotePtr;
