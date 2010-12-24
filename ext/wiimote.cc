@@ -50,6 +50,13 @@ void WiiMote::close(void)
   };
 }
 
+void WiiMote::setLED( int state ) throw (Error)
+{
+  m_error = false;
+  cwiid_set_led( m_wiimote, state );
+  ERRORMACRO( !m_error, Error, , "Error setting LED state: " << m_errorMsg );
+}
+
 void WiiMote::err( const char *s, va_list ap )
 {
   char buffer[4096];
@@ -61,9 +68,14 @@ void WiiMote::err( const char *s, va_list ap )
 VALUE WiiMote::registerRubyClass(void)
 {
   cRubyClass = rb_define_class( "WiiMote", rb_cObject );
+  rb_define_const( cRubyClass, "LED1_ON", INT2NUM( CWIID_LED1_ON ) );
+  rb_define_const( cRubyClass, "LED2_ON", INT2NUM( CWIID_LED2_ON ) );
+  rb_define_const( cRubyClass, "LED3_ON", INT2NUM( CWIID_LED3_ON ) );
+  rb_define_const( cRubyClass, "LED4_ON", INT2NUM( CWIID_LED4_ON ) );
   rb_define_singleton_method( cRubyClass, "new",
                               RUBY_METHOD_FUNC( wrapNew ), 0 );
   rb_define_method( cRubyClass, "close", RUBY_METHOD_FUNC( wrapClose ), 0 );
+  rb_define_method( cRubyClass, "set_led", RUBY_METHOD_FUNC( wrapSetLED ), 1 );
   return cRubyClass;
 }
 
@@ -84,6 +96,17 @@ VALUE WiiMote::wrapNew( VALUE rbClass )
   };
   return retVal;
 }
+
+VALUE WiiMote::wrapSetLED( VALUE rbSelf, VALUE rbState )
+{
+  try {
+    WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+    (*self)->setLED( NUM2INT( rbState ) );
+  } catch ( exception &e ) {
+    rb_raise( rb_eRuntimeError, "%s", e.what() );
+  };
+  return rbState;
+}  
 
 VALUE WiiMote::wrapClose( VALUE rbSelf )
 {

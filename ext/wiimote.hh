@@ -27,12 +27,14 @@ public:
   WiiMote(void) throw (Error);
   virtual ~WiiMote(void);
   void close(void);
+  void setLED( int state ) throw (Error);
   void err( const char *s, va_list ap );
   static VALUE cRubyClass;
   static VALUE registerRubyClass(void);
   static void deleteRubyObject( void *ptr );
   static VALUE wrapNew( VALUE rbClass );
   static VALUE wrapClose( VALUE rbSelf );
+  static VALUE wrapSetLED( VALUE rbSelf, VALUE rbState );
   static WiiMote *current;
 protected:
   cwiid_wiimote_t *m_wiimote;
