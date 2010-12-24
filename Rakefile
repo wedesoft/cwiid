@@ -6,7 +6,7 @@ require 'rake/packagetask'
 require 'rake/loaders/makefile'
 require 'rbconfig'
 
-PKG_NAME = 'ruby-cwiid'
+PKG_NAME = 'cwiid'
 PKG_VERSION = '0.1.0'
 CFG = RbConfig::CONFIG
 CXX = ENV[ 'CXX' ] || 'g++'
@@ -24,7 +24,7 @@ SUMMARY = %q{Using the Wii Remote with Ruby}
 DESCRIPTION = %q{This Ruby extension provides an inerface to access a Wii Remote using the libcwiid library.}
 AUTHOR = %q{Jan Wedekind}
 EMAIL = %q{jan@wedesoft.de}
-HOMEPAGE = %q{http://wedesoft.github.com/ruby-cwiid/}
+HOMEPAGE = %q{http://wedesoft.github.com/cwiid/}
 
 OBJ = CC_FILES.ext 'o'
 $CXXFLAGS = "-DNDEBUG #{CFG[ 'CPPFLAGS' ]} #{CFG[ 'CFLAGS' ]}"
