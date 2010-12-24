@@ -19,10 +19,23 @@ using namespace std;
 
 VALUE WiiMote::cRubyClass = Qnil;
 
+void err( cwiid_wiimote_t *wiimote, const char *s, va_list ap )
+{
+  if ( wiimote )
+    printf( "%d: ", cwiid_get_id( wiimote ) );
+  else
+    printf( "-1: " );
+  vprintf( s, ap );
+  printf( "\n" );
+}
+
 WiiMote::WiiMote(void) throw (Error):
   m_wiimote(NULL)
 {
-  m_wiimote = cwiid_open( NULL, 0 );
+  bdaddr_t bdaddrAny = { { 0, 0, 0, 0, 0, 0 } };
+  cwiid_set_err( err );
+  m_wiimote = cwiid_open( &bdaddrAny, 0 );
+  ERRORMACRO( m_wiimote != NULL, Error, , "Failed to connect to Wii Remote" );
 }
 
 WiiMote::~WiiMote(void)
