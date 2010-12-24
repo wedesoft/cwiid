@@ -41,6 +41,7 @@ public:
   bool irValid( int i );
   unsigned short int getIRX( int i );
   unsigned short int getIRY( int i );
+  char getIRSize( int i );
   void err( const char *s, va_list ap );
   static VALUE cRubyClass;
   static VALUE registerRubyClass(void);

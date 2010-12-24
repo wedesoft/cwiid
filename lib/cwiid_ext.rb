@@ -21,7 +21,7 @@ class WiiMote
 
     def new
       retval = orig_new
-      retval.rpt_mode = RPT_STATUS | RPT_BTN | RPT_ACC
+      retval.rpt_mode = RPT_STATUS | RPT_BTN | RPT_ACC | RPT_IR
       retval
     end
 

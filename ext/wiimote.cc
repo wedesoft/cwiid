@@ -136,6 +136,11 @@ unsigned short int WiiMote::getIRY( int i )
   return m_state.ir_src[ i ].pos[ CWIID_Y ];
 }
 
+char WiiMote::getIRSize( int i )
+{
+  return m_state.ir_src[ i ].size;
+}
+
 void WiiMote::err( const char *s, va_list ap )
 {
   char buffer[4096];
@@ -319,8 +324,10 @@ VALUE WiiMote::wrapGetIR( VALUE rbSelf )
   WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
   for ( int i=0; i<CWIID_IR_SRC_COUNT; i++ )
     if ( (*self)->irValid( i ) )
-      rb_ary_push( rbRetVal, rb_ary_new3( 2, INT2NUM( (*self)->getIRX( i ) ),
-                                          INT2NUM( (*self)->getIRY( i ) ) ) );
+      rb_ary_push( rbRetVal, rb_ary_new3( 3,
+                                          INT2NUM( (*self)->getIRX( i ) ),
+                                          INT2NUM( (*self)->getIRY( i ) ),
+                                          INT2NUM( (*self)->getIRSize( i ) ) ) );
   return rbRetVal;
 }
 
