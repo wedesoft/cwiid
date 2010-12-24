@@ -13,23 +13,22 @@
 
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
-#include "wiimote.hh"
-#ifdef WIN32
-#define DLLEXPORT __declspec(dllexport)
-#define DLLLOCAL
-#else
-#define DLLEXPORT __attribute__ ((visibility("default")))
-#define DLLLOCAL __attribute__ ((visibility("hidden")))
+#ifndef WIIMOTE_HH
+#define WIIMOTE_HH
+#include <boost/shared_ptr.hpp>
+#include "rubyinc.hh"
+#include "error.hh"
+
+class WiiMote
+{
+public:
+  WiiMote(void) throw (Error);
+  static VALUE cRubyClass;
+  static VALUE registerRubyClass(void);
+  static void deleteRubyObject( void *ptr );
+  static VALUE wrapNew( VALUE rbClass );
+};
+
+typedef boost::shared_ptr< WiiMote > WiiMotePtr;
+
 #endif
-
-extern "C" DLLEXPORT void Init_cwiid(void);
-
-extern "C" {
-
-  void Init_cwiid(void)
-  {
-    WiiMote::registerRubyClass();
-    rb_require( "cwiid_ext.rb" );
-  }
-
-}
