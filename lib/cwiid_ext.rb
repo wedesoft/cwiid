@@ -13,4 +13,30 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+class WiiMote
+
+  class << self
+
+    alias_method :orig_new, :new
+
+    def new
+      retval = orig_new
+      retval.instance_eval do
+        @led = 0
+      end
+      retval
+    end
+
+  end
+
+  attr_reader :led
+
+  alias_method :orig_set_led, :led=
+
+  def led=( state )
+    @led = state
+    orig_set_led state
+  end
+
+end
 

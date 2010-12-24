@@ -77,7 +77,7 @@ VALUE WiiMote::registerRubyClass(void)
   rb_define_singleton_method( cRubyClass, "new",
                               RUBY_METHOD_FUNC( wrapNew ), 0 );
   rb_define_method( cRubyClass, "close", RUBY_METHOD_FUNC( wrapClose ), 0 );
-  rb_define_method( cRubyClass, "set_led", RUBY_METHOD_FUNC( wrapSetLED ), 1 );
+  rb_define_method( cRubyClass, "led=", RUBY_METHOD_FUNC( wrapSetLED ), 1 );
   return cRubyClass;
 }
 
