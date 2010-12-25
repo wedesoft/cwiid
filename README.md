@@ -31,27 +31,53 @@ Simply run Interactive Ruby:
 
 Here's a small example displaying the state of the accelerometer:
 
-    #!/usr/bin/env ruby
     require 'rubygems'
+    require 'opengl'
     require 'cwiid'
-    require 'hornetseye_rmagick'
-    require 'hornetseye_xorg'
-    include Hornetseye
-    include Magick
     wiimote = WiiMote.new
-    X11Display.show do |display|
-      display.status = wiimote.buttons != WiiMote::BTN_1
-      wiimote.get_state
+    display = proc do
       acc = wiimote.acc
-      image = Image.new 240, 240, HatchFill.new( 'white', 'lightcyan2' )
-      gc = Draw.new
-      gc.fill_opacity 0
-      gc.stroke_width 2
-      gc.stroke 'red'
-      gc.line 120, 120, acc[0], acc[2]
-      gc.stroke 'green'
-      gc.line 120, 120, acc[1], acc[2]
-      gc.draw image
-      image.to_multiarray
+      glClear GL_COLOR_BUFFER_BIT
+      glLineWidth 3.0
+      glColor 1.0, 0.0, 0.0
+      glBegin GL_LINES
+      glVertex 120, 120
+      glVertex acc[0], acc[2]
+      glEnd
+      glColor 0.0, 1.0, 0.0
+      glBegin GL_LINES
+      glVertex 120, 120
+      glVertex acc[1], acc[2]
+      glEnd
+      glutSwapBuffers
     end
+    reshape = proc do |w, h|
+      glViewport 0, 0, w, h
+      glMatrixMode GL_PROJECTION
+      glLoadIdentity
+      GLU.Ortho2D 0.0, w, 0.0, h
+    end
+    keyboard = proc do |key, x, y|
+      case key
+      when ?\e
+        exit 0
+      end
+    end
+    animate = proc do
+      wiimote.get_state
+      exit 0 if wiimote.buttons == WiiMote::BTN_1
+      glutPostRedisplay
+    end
+    glutInit
+    glutInitDisplayMode GLUT_DOUBLE | GLUT_RGB
+    glutInitWindowSize 240, 240
+    glutCreateWindow 'Wii Remote'
+    glClearColor 1.0, 1.0, 1.0, 0.0
+    glShadeModel GL_FLAT
+    
+    glutDisplayFunc display
+    glutReshapeFunc reshape
+    glutKeyboardFunc keyboard
+    glutIdleFunc animate
+    glutMainLoop
 
