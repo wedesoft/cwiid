@@ -55,7 +55,7 @@ Here's a small example displaying the state of the accelerometer:
       glViewport 0, 0, w, h
       glMatrixMode GL_PROJECTION
       glLoadIdentity
-      GLU.Ortho2D 0.0, w, 0.0, h
+      GLU.Ortho2D 0.0, 240, 0.0, 240
     end
     keyboard = proc do |key, x, y|
       case key
