@@ -35,27 +35,43 @@ Here's a small example displaying the state of the accelerometer:
     require 'opengl'
     require 'cwiid'
     wiimote = WiiMote.new
+    wiimote.rpt_mode = WiiMote::RPT_BTN | WiiMote::RPT_ACC
+    $list = nil
+    def init
+      GL.ClearColor 0.0, 0.0, 0.0, 1.0
+      GL.Light GL_LIGHT0, GL_POSITION, [ 0.5, 0.5, 1.0, 0.0 ]
+      GL.Enable GL_LIGHTING
+      GL.Enable GL_LIGHT0
+      GL.DepthFunc GL_LESS
+      GL.Enable GL_DEPTH_TEST
+      $list = GL.GenLists 1
+      GL.NewList $list, GL_COMPILE
+      GL.Material GL_FRONT, GL_SPECULAR, [ 1.0, 1.0, 1.0, 0.15 ]
+      GL.Material GL_FRONT, GL_SHININESS, [ 100.0 ]
+      GL.Material GL_FRONT, GL_EMISSION, [ 0.0, 0.2, 0.0, 1.0 ]
+      GL.Material GL_FRONT, GL_DIFFUSE, [ 0.1, 0.8, 0.1, 1.0 ]
+      GLUT.SolidSphere 0.4, 16, 16
+      GL.EndList
+    end
     display = proc do
       acc = wiimote.acc
-      glClear GL_COLOR_BUFFER_BIT
-      glLineWidth 3.0
-      glColor 1.0, 0.0, 0.0
-      glBegin GL_LINES
-      glVertex 120, 120
-      glVertex acc[0], acc[2]
-      glEnd
-      glColor 0.0, 1.0, 0.0
-      glBegin GL_LINES
-      glVertex 120, 120
-      glVertex acc[1], acc[2]
-      glEnd
-      glutSwapBuffers
+      GL.Clear GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT
+      GL.PushMatrix
+      GL.Translate( ( acc[0] - 120 ) * 0.01,
+                    ( 120 - acc[2] ) * 0.01,
+                    ( 120 - acc[1] ) * 0.01 )
+      GL.CallList $list
+      GL.PopMatrix
+      GLUT.SwapBuffers
     end
     reshape = proc do |w, h|
-      glViewport 0, 0, w, h
-      glMatrixMode GL_PROJECTION
-      glLoadIdentity
-      GLU.Ortho2D 0.0, 240, 0.0, 240
+      GL.Viewport 0, 0, w, h
+      GL.MatrixMode GL_PROJECTION
+      GL.LoadIdentity
+      GLU.Perspective 60.0, w.to_f/h, 1.0, 20.0
+      GL.MatrixMode GL_MODELVIEW
+      GL.LoadIdentity
+      GL.Translate 0.0, 0.0, -3.5
     end
     keyboard = proc do |key, x, y|
       case key
@@ -66,18 +82,16 @@ Here's a small example displaying the state of the accelerometer:
     animate = proc do
       wiimote.get_state
       exit 0 if wiimote.buttons == WiiMote::BTN_1
-      glutPostRedisplay
+      GLUT.PostRedisplay
     end
-    glutInit
-    glutInitDisplayMode GLUT_DOUBLE | GLUT_RGB
-    glutInitWindowSize 240, 240
-    glutCreateWindow 'Wii Remote'
-    glClearColor 1.0, 1.0, 1.0, 0.0
-    glShadeModel GL_FLAT
-    
-    glutDisplayFunc display
-    glutReshapeFunc reshape
-    glutKeyboardFunc keyboard
-    glutIdleFunc animate
-    glutMainLoop
-
+    GLUT.Init
+    GLUT.InitDisplayMode GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH
+    GLUT.InitWindowSize 640, 480
+    GLUT.CreateWindow 'Wii Remote'
+    init
+    GLUT.DisplayFunc display
+    GLUT.ReshapeFunc reshape
+    GLUT.KeyboardFunc keyboard
+    GLUT.IdleFunc animate
+    GLUT.MainLoop
+ 
