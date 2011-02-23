@@ -55,6 +55,8 @@ void WiiMote::close(void)
 
 void WiiMote::requestStatus(void) throw (Error)
 {
+  ERRORMACRO( m_wiimote != NULL, Error, , "Wii Remote is closed. "
+              "Did you call \"close\" before?" );
   m_error = false;
   cwiid_request_status( m_wiimote );
   ERRORMACRO( !m_error, Error, , "Status request error: " << m_errorMsg );
@@ -62,6 +64,8 @@ void WiiMote::requestStatus(void) throw (Error)
 
 void WiiMote::getState(void) throw (Error)
 {
+  ERRORMACRO( m_wiimote != NULL, Error, , "Wii Remote is closed. "
+              "Did you call \"close\" before?" );
   m_error = false;
   cwiid_get_state( m_wiimote, &m_state );
   ERRORMACRO( !m_error, Error, , "Error getting state: " << m_errorMsg );
@@ -74,6 +78,8 @@ unsigned char WiiMote::getRptMode(void)
 
 void WiiMote::setRptMode( unsigned char mode ) throw (Error)
 {
+  ERRORMACRO( m_wiimote != NULL, Error, , "Wii Remote is closed. "
+              "Did you call \"close\" before?" );
   m_error = false;
   cwiid_set_rpt_mode( m_wiimote, mode );
   ERRORMACRO( !m_error, Error, , "Error setting RPT mode: " << m_errorMsg );
@@ -92,6 +98,8 @@ unsigned char WiiMote::getLED(void)
 
 void WiiMote::setLED( unsigned char state ) throw (Error)
 {
+  ERRORMACRO( m_wiimote != NULL, Error, , "Wii Remote is closed. "
+              "Did you call \"close\" before?" );
   m_error = false;
   cwiid_set_led( m_wiimote, state );
   ERRORMACRO( !m_error, Error, , "Error setting LED state: " << m_errorMsg );
@@ -105,6 +113,8 @@ bool WiiMote::getRumble(void)
 
 void WiiMote::setRumble( bool state ) throw( Error )
 {
+  ERRORMACRO( m_wiimote != NULL, Error, , "Wii Remote is closed. "
+              "Did you call \"close\" before?" );
   m_error = false;
   cwiid_set_rumble( m_wiimote, state ? 1 : 0 );
   ERRORMACRO( !m_error, Error, , "Error setting rumble state: " << m_errorMsg );
@@ -234,15 +244,23 @@ VALUE WiiMote::wrapClose( VALUE rbSelf )
 
 VALUE WiiMote::wrapRequestStatus( VALUE rbSelf )
 {
-  WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
-  (*self)->requestStatus();
+  try {
+    WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+    (*self)->requestStatus();
+  } catch ( exception &e ) {
+    rb_raise( rb_eRuntimeError, "%s", e.what() );
+  };
   return rbSelf;
 }
 
 VALUE WiiMote::wrapGetState( VALUE rbSelf )
 {
-  WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
-  (*self)->getState();
+  try {
+    WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+    (*self)->getState();
+  } catch ( exception &e ) {
+    rb_raise( rb_eRuntimeError, "%s", e.what() );
+  };
   return rbSelf;
 }
 

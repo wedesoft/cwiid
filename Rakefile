@@ -7,7 +7,7 @@ require 'rake/loaders/makefile'
 require 'rbconfig'
 
 PKG_NAME = 'cwiid'
-PKG_VERSION = '0.1.2'
+PKG_VERSION = '0.1.3'
 CFG = RbConfig::CONFIG
 CXX = ENV[ 'CXX' ] || 'g++'
 RB_FILES = FileList[ 'lib/**/*.rb' ]
@@ -81,8 +81,7 @@ end
 begin
   require 'yard'
   YARD::Rake::YardocTask.new :yard do |y|
-    y.options << '--no-private'
-    y.files << FileList[ 'lib/**/*.rb' ]
+    y.files << RB_FILES
   end
 rescue LoadError
   STDERR.puts 'Please install \'yard\' if you want to generate documentation'

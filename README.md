@@ -34,6 +34,7 @@ Here's a small example displaying the state of the accelerometer:
     require 'rubygems'
     require 'opengl'
     require 'cwiid'
+    puts 'Put Wiimote in discoverable mode now (press 1+2)...'
     wiimote = WiiMote.new
     wiimote.rpt_mode = WiiMote::RPT_BTN | WiiMote::RPT_ACC
     $list = nil
