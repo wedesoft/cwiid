@@ -27,7 +27,7 @@ public:
   WiiMote(void) throw (Error);
   virtual ~WiiMote(void);
   void close(void);
-  void requestStatus(void) throw (Error);
+  int requestStatus(void) throw (Error);
   void getState(void) throw (Error);
   unsigned char getRptMode(void);
   void setRptMode( unsigned char mode ) throw (Error);
@@ -42,6 +42,7 @@ public:
   unsigned short int getIRX( int i );
   unsigned short int getIRY( int i );
   char getIRSize( int i );
+  unsigned short int getMotionPlus( int i );
   void err( const char *s, va_list ap );
   static VALUE cRubyClass;
   static VALUE registerRubyClass(void);
@@ -60,6 +61,7 @@ public:
   static VALUE wrapGetButtons( VALUE rbSelf );
   static VALUE wrapGetAcc( VALUE rbSelf );
   static VALUE wrapGetIR( VALUE rbSelf );
+  static VALUE wrapGetMotionPlus( VALUE rbSelf );
   static WiiMote *current;
 protected:
   cwiid_wiimote_t *m_wiimote;

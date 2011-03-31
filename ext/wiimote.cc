@@ -53,13 +53,14 @@ void WiiMote::close(void)
   };
 }
 
-void WiiMote::requestStatus(void) throw (Error)
+int WiiMote::requestStatus(void) throw (Error)
 {
   ERRORMACRO( m_wiimote != NULL, Error, , "Wii Remote is closed. "
               "Did you call \"close\" before?" );
   m_error = false;
-  cwiid_request_status( m_wiimote );
+  int status = cwiid_request_status( m_wiimote );
   ERRORMACRO( !m_error, Error, , "Status request error: " << m_errorMsg );
+  return status;
 }
 
 void WiiMote::getState(void) throw (Error)
@@ -151,6 +152,11 @@ char WiiMote::getIRSize( int i )
   return m_state.ir_src[ i ].size;
 }
 
+unsigned short int WiiMote::getMotionPlus( int id )
+{
+  return m_state.ext.motionplus.angle_rate[ id ];
+}
+
 void WiiMote::err( const char *s, va_list ap )
 {
   char buffer[4096];
@@ -214,6 +220,8 @@ VALUE WiiMote::registerRubyClass(void)
                     RUBY_METHOD_FUNC( wrapGetAcc ), 0 );
   rb_define_method( cRubyClass, "ir",
                     RUBY_METHOD_FUNC( wrapGetIR ), 0 );
+  rb_define_method( cRubyClass, "motionplus",
+                    RUBY_METHOD_FUNC( wrapGetMotionPlus ), 0 );
   return cRubyClass;
 }
 
@@ -244,13 +252,14 @@ VALUE WiiMote::wrapClose( VALUE rbSelf )
 
 VALUE WiiMote::wrapRequestStatus( VALUE rbSelf )
 {
+  VALUE rbRetVal = Qnil;
   try {
     WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
-    (*self)->requestStatus();
+    rbRetVal = INT2NUM( (*self)->requestStatus() );
   } catch ( exception &e ) {
     rb_raise( rb_eRuntimeError, "%s", e.what() );
   };
-  return rbSelf;
+  return rbRetVal;
 }
 
 VALUE WiiMote::wrapGetState( VALUE rbSelf )
@@ -348,4 +357,12 @@ VALUE WiiMote::wrapGetIR( VALUE rbSelf )
                                           INT2NUM( (*self)->getIRSize( i ) ) ) );
   return rbRetVal;
 }
+
+VALUE WiiMote::wrapGetMotionPlus( VALUE rbSelf )
+{
+  WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
+  return rb_ary_new3( 3, INT2NUM( (*self)->getMotionPlus( 0 ) ),
+                         INT2NUM( (*self)->getMotionPlus( 1 ) ),
+                         INT2NUM( (*self)->getMotionPlus( 2 ) ) );
+}  
 
