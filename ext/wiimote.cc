@@ -197,7 +197,7 @@ VALUE WiiMote::registerRubyClass(void)
   rb_define_const( cRubyClass, "BTN_B", INT2NUM( CWIID_BTN_B ) );
   rb_define_const( cRubyClass, "BTN_A", INT2NUM( CWIID_BTN_A ) );
   rb_define_const( cRubyClass, "NUNCHUK_BTN_C", INT2NUM( CWIID_NUNCHUK_BTN_C ) );
-  rb_define_const( cRubyClass, "NUNCHUK_BTN_Z", INT2NUM( CWIID_NUNCHUK_BTN_Z ) );  
+  rb_define_const( cRubyClass, "NUNCHUK_BTN_Z", INT2NUM( CWIID_NUNCHUK_BTN_Z ) );
   rb_define_const( cRubyClass, "BTN_MINUS", INT2NUM( CWIID_BTN_MINUS ) );
   rb_define_const( cRubyClass, "BTN_HOME", INT2NUM( CWIID_BTN_HOME ) );
   rb_define_const( cRubyClass, "BTN_LEFT", INT2NUM( CWIID_BTN_LEFT ) );
@@ -235,13 +235,13 @@ VALUE WiiMote::registerRubyClass(void)
   rb_define_method( cRubyClass, "buttons",
                     RUBY_METHOD_FUNC( wrapGetButtons ), 0 );
   rb_define_method( cRubyClass, "nunchuk_buttons",
-                    RUBY_METHOD_FUNC( wrapGetNunchukButtons ), 0 );                    
+                    RUBY_METHOD_FUNC( wrapGetNunchukButtons ), 0 );
   rb_define_method( cRubyClass, "acc",
                     RUBY_METHOD_FUNC( wrapGetAcc ), 0 );
   rb_define_method( cRubyClass, "nunchuk_acc",
-                    RUBY_METHOD_FUNC( wrapGetNunchukAcc ), 0 );     
+                    RUBY_METHOD_FUNC( wrapGetNunchukAcc ), 0 );
   rb_define_method( cRubyClass, "nunchuk_stick",
-                    RUBY_METHOD_FUNC( wrapGetNunchukJoyStick ), 0 );                                     
+                    RUBY_METHOD_FUNC( wrapGetNunchukJoyStick ), 0 );
   rb_define_method( cRubyClass, "ir",
                     RUBY_METHOD_FUNC( wrapGetIR ), 0 );
   rb_define_method( cRubyClass, "motionplus",
@@ -313,19 +313,19 @@ VALUE WiiMote::wrapSetRptMode( VALUE rbSelf, VALUE rbMode )
     rb_raise( rb_eRuntimeError, "%s", e.what() );
   };
   return rbMode;
-}  
+}
 
 VALUE WiiMote::wrapGetBattery( VALUE rbSelf )
 {
   WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
   return INT2NUM( (*self)->getBattery() );
-}  
+}
 
 VALUE WiiMote::wrapGetLED( VALUE rbSelf )
 {
   WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
   return INT2NUM( (*self)->getLED() );
-}  
+}
 
 VALUE WiiMote::wrapSetLED( VALUE rbSelf, VALUE rbState )
 {
@@ -336,13 +336,13 @@ VALUE WiiMote::wrapSetLED( VALUE rbSelf, VALUE rbState )
     rb_raise( rb_eRuntimeError, "%s", e.what() );
   };
   return rbState;
-}  
+}
 
 VALUE WiiMote::wrapGetRumble( VALUE rbSelf )
 {
   WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
   return (*self)->getRumble() ? Qtrue : Qfalse;
-}  
+}
 
 VALUE WiiMote::wrapSetRumble( VALUE rbSelf, VALUE rbState )
 {
@@ -353,13 +353,13 @@ VALUE WiiMote::wrapSetRumble( VALUE rbSelf, VALUE rbState )
     rb_raise( rb_eRuntimeError, "%s", e.what() );
   };
   return rbState;
-}  
+}
 
 VALUE WiiMote::wrapGetButtons( VALUE rbSelf )
 {
   WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
   return INT2NUM( (*self)->getButtons() );
-}  
+}
 
 
 
@@ -369,7 +369,7 @@ VALUE WiiMote::wrapGetAcc( VALUE rbSelf )
   return rb_ary_new3( 3, INT2NUM( (*self)->getAcc( 0 ) ),
                          INT2NUM( (*self)->getAcc( 1 ) ),
                          INT2NUM( (*self)->getAcc( 2 ) ) );
-}  
+}
 
 VALUE WiiMote::wrapGetIR( VALUE rbSelf )
 {
@@ -390,7 +390,7 @@ VALUE WiiMote::wrapGetMotionPlus( VALUE rbSelf )
   return rb_ary_new3( 3, INT2NUM( (*self)->getMotionPlus( 0 ) ),
                          INT2NUM( (*self)->getMotionPlus( 1 ) ),
                          INT2NUM( (*self)->getMotionPlus( 2 ) ) );
-}  
+}
 
 VALUE WiiMote::wrapGetNunchukAcc( VALUE rbSelf )
 {
@@ -398,18 +398,18 @@ VALUE WiiMote::wrapGetNunchukAcc( VALUE rbSelf )
   return rb_ary_new3( 3, INT2NUM( (*self)->getNunchukAcc( 0 ) ),
                          INT2NUM( (*self)->getNunchukAcc( 1 ) ),
                          INT2NUM( (*self)->getNunchukAcc( 2 ) ) );
-}  
+}
 
 VALUE WiiMote::wrapGetNunchukJoyStick( VALUE rbSelf )
 {
   WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
   return rb_ary_new3( 2, INT2NUM( (*self)->getNunchukJoyStick( 0 ) ),
                          INT2NUM( (*self)->getNunchukJoyStick( 1 ) ));
-}  
+}
 
 VALUE WiiMote::wrapGetNunchukButtons( VALUE rbSelf )
 {
   WiiMotePtr *self; Data_Get_Struct( rbSelf, WiiMotePtr, self );
   return INT2NUM( (*self)->getNunchukButtons() );
-}  
+}
 
