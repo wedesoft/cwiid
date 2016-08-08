@@ -37,7 +37,10 @@ public:
   bool getRumble(void);
   void setRumble( bool state ) throw(Error);
   unsigned short int getButtons(void);
+  unsigned short int getNunchukButtons(void);  
   unsigned char getAcc( int id );
+  unsigned char getNunchukAcc( int id );  
+  unsigned char getNunchukJoyStick( int id );  
   bool irValid( int i );
   unsigned short int getIRX( int i );
   unsigned short int getIRY( int i );
@@ -60,6 +63,9 @@ public:
   static VALUE wrapSetRumble( VALUE rbSelf, VALUE rbState );
   static VALUE wrapGetButtons( VALUE rbSelf );
   static VALUE wrapGetAcc( VALUE rbSelf );
+  static VALUE wrapGetNunchukButtons( VALUE rbSelf );
+  static VALUE wrapGetNunchukAcc( VALUE rbSelf ); 
+  static VALUE wrapGetNunchukJoyStick( VALUE rbSelf );   
   static VALUE wrapGetIR( VALUE rbSelf );
   static VALUE wrapGetMotionPlus( VALUE rbSelf );
   static WiiMote *current;
