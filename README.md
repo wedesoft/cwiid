@@ -2,7 +2,7 @@ cwiid
 =====
 
 **Author**:       Jan Wedekind
-**Copyright**:    2010
+**Copyright**:    2016
 **License**:      GPL
 
 Synopsis
