@@ -18,6 +18,6 @@ SUMMARY = %q{Using the Wii Remote with Ruby}
 DESCRIPTION = %q{This Ruby extension provides an inerface to access a Wii Remote using the libcwiid library.}
 AUTHOR = %q{Jan Wedekind}
 EMAIL = %q{jan@wedesoft.de}
-HOMEPAGE = %q{http://wedesoft.github.com/cwiid/}
+HOMEPAGE = %q{http://wedesoft.github.io/cwiid/}
 
 
